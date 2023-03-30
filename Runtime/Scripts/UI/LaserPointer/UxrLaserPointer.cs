@@ -9,15 +9,15 @@ using UltimateXR.Core.Components.Composite;
 using UltimateXR.Devices;
 using UltimateXR.Devices.Visualization;
 using UltimateXR.Extensions.Unity.Render;
-using UltimateXR.UI.UnityInputModule;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace UltimateXR.UI
 {
     /// <summary>
-    ///     Component that, added to an object in an <see cref="UxrAvatar" /> , allows it to interact with user interfaces
-    ///     using a laser pointer. It is normally added to the hand, so that it points in a forward direction from the hand,
+    ///     Component that, added to an object in an <see cref="UxrAvatar" /> , allows it to interact with objects
+    ///     using a laser pointer. Which objects the laser pointer interacts with depends on the UxrInteractableEventDataProvider that is added to the laser pointer.
+    ///     The laser pointer is normally added to the hand, so that it points in a forward direction from the hand,
     ///     but can also be added to inanimate objects.
     /// </summary>
     public class UxrLaserPointer : UxrAvatarComponent<UxrLaserPointer>
@@ -295,9 +295,9 @@ namespace UltimateXR.UI
                 UxrManager.LogMissingAvatarInHierarchyError(this);
             }
 
-            _pointerEventDataProvider = GetComponent<UxrPointerEventDataProvider>();
+            _pointerEventDataProvider = GetComponent<UxrInteractableEventDataProvider>();
 
-            Debug.Assert( _pointerEventDataProvider != null, "No UxrPointerEventDataProvider found. Please add one to this GameObject for the LaserPointer to work!",this);
+            Debug.Assert( _pointerEventDataProvider != null, "No UxrInteractableEventDataProvider found. Please add one to this GameObject for the LaserPointer to work!",this);
 
             // Set up line renderer
 
@@ -353,7 +353,7 @@ namespace UltimateXR.UI
 
             if (laserPointerEventData != null && laserPointerEventData.HasData && IsLaserEnabled)
             {
-                CurrentRayLength = laserPointerEventData.pointerCurrentRaycast.distance;
+                CurrentRayLength = laserPointerEventData.Distance;
 
                 if (Avatar.CameraComponent && _hitQuad)
                 {
@@ -438,7 +438,7 @@ namespace UltimateXR.UI
         private Renderer     _laserHitRenderer;
         private bool         _isAutoEnabled;
         private GameObject   _hitQuad;
-        private UxrPointerEventDataProvider _pointerEventDataProvider;
+        private UxrInteractableEventDataProvider _pointerEventDataProvider;
 
         #endregion
     }
