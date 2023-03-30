@@ -14,7 +14,7 @@ namespace UltimateXR.UI.UnityInputModule
     ///     Event data class that adds information required by <see cref="UxrPointerInputModule" /> to facilitate the
     ///     processing of UI interaction events.
     /// </summary>
-    public class UxrPointerEventData : PointerEventData
+    public class UxrPointerEventData : PointerEventData, IUxrPointerEventData
     {
         #region Public Types & Data
 

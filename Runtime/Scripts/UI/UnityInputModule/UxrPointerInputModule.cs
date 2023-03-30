@@ -235,7 +235,7 @@ namespace UltimateXR.UI.UnityInputModule
         /// </summary>
         /// <param name="laserPointer">Laser pointer to get the event data of</param>
         /// <returns>Pointer event data if it exists or null if not</returns>
-        public UxrPointerEventData GetPointerEventData(UxrLaserPointer laserPointer)
+        public IUxrPointerEventData GetPointerEventData(UxrLaserPointer laserPointer)
         {
             return _laserPointerEventData.TryGetValue(laserPointer, out UxrPointerEventData pointerEventData) ? pointerEventData : null;
         }

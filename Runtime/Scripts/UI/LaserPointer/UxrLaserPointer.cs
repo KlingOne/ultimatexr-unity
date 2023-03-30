@@ -28,9 +28,9 @@ namespace UltimateXR.UI
         
         [SerializeField] protected UxrHandSide _handSide             = UxrHandSide.Left;
         [SerializeField] protected bool        _useControllerForward = true;
-        
+
         // Interaction
-        
+
         [SerializeField] protected UxrLaserPointerTargetTypes _targetTypes                 = UxrLaserPointerTargetTypes.UI | UxrLaserPointerTargetTypes.Colliders2D | UxrLaserPointerTargetTypes.Colliders3D;
         [SerializeField] private   QueryTriggerInteraction    _triggerCollidersInteraction = QueryTriggerInteraction.Ignore;
         [SerializeField] private   LayerMask                  _blockingMask                = ~0;
@@ -295,6 +295,10 @@ namespace UltimateXR.UI
                 UxrManager.LogMissingAvatarInHierarchyError(this);
             }
 
+            _pointerEventDataProvider = GetComponent<UxrPointerEventDataProvider>();
+
+            Debug.Assert( _pointerEventDataProvider != null, "No UxrPointerEventDataProvider found. Please add one to this GameObject for the LaserPointer to work!",this);
+
             // Set up line renderer
 
             _lineRenderer               = gameObject.AddComponent<LineRenderer>();
@@ -331,12 +335,10 @@ namespace UltimateXR.UI
                 OptionalEnableWhenLaserOn.SetActive(IsLaserEnabled);
             }
 
-            // TODO: In order to use UxrLaserPointer for other than Unity UI, the following part should be extracted. 
-
-            UxrPointerEventData laserPointerEventData = UxrPointerInputModule.Instance != null ? UxrPointerInputModule.Instance.GetPointerEventData(this) : null;
+            var laserPointerEventData = _pointerEventDataProvider?.GetData();
 
             if (_lineRenderer)
-            {
+            {        
                 _lineRenderer.enabled        = IsLaserEnabled && !IsInvisible;
                 _lineRenderer.material.color = laserPointerEventData != null && laserPointerEventData.IsInteractive ? RayColorInteractive : RayColorNonInteractive;
 
@@ -436,6 +438,7 @@ namespace UltimateXR.UI
         private Renderer     _laserHitRenderer;
         private bool         _isAutoEnabled;
         private GameObject   _hitQuad;
+        private UxrPointerEventDataProvider _pointerEventDataProvider;
 
         #endregion
     }
