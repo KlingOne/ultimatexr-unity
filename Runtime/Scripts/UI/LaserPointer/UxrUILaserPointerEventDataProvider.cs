@@ -5,26 +5,24 @@ using UnityEngine;
 
 namespace UltimateXR.UI
 {
-    public class UxrUIInteractableEventDataProvider : UxrInteractableEventDataProvider
+    /// <summary>
+    /// Implementation of the <see cref="UxrLaserPointerEventDataProvider"/> to make the <see cref="UxrLaserPointer"/> work with UI Canvases
+    /// </summary>
+    public class UxrUILaserPointerEventDataProvider : UxrLaserPointerEventDataProvider
     {
         private UxrLaserPointer pointer;
-        private UxrFingerTip tip;
-        private UxrInteractableEventData _data = new UxrInteractableEventData();
+        private UxrLaserPointerEventData _data = new UxrLaserPointerEventData();
         private void Start()
         {
-            //TODO: This is only necessary since UxrPointerInputModule.Instance.GetPointerEventData works with distinct types. Maybe this can be simplified?
             pointer = GetComponent<UxrLaserPointer>();
-            tip = GetComponent<UxrFingerTip>();
         }
 
-        public override UxrInteractableEventData GetData()
+        public override UxrLaserPointerEventData GetData()
         {
             UxrPointerEventData uiData = null;
 
             if (pointer != null )
                uiData = UxrPointerInputModule.Instance != null ? UxrPointerInputModule.Instance.GetPointerEventData(pointer) : null;
-            else if(tip != null )
-               uiData = UxrPointerInputModule.Instance != null ? UxrPointerInputModule.Instance.GetPointerEventData(tip) : null;
 
             if (uiData != null)
             {
