@@ -16,7 +16,7 @@ namespace UltimateXR.UI
 {
     /// <summary>
     ///     Component that, added to an object in an <see cref="UxrAvatar" /> , allows it to interact with objects
-    ///     using a laser pointer. Which objects the laser pointer interacts with depends on the UxrInteractableEventDataProvider that is added to the laser pointer.
+    ///     using a laser pointer. Which objects the laser pointer interacts with depends on the UxrLaserPointerEventDataProvider that is added to the laser pointer.
     ///     The laser pointer is normally added to the hand, so that it points in a forward direction from the hand,
     ///     but can also be added to inanimate objects.
     /// </summary>
@@ -295,9 +295,10 @@ namespace UltimateXR.UI
                 UxrManager.LogMissingAvatarInHierarchyError(this);
             }
 
-            _pointerEventDataProvider = GetComponent<UxrInteractableEventDataProvider>();
+            //Implementations of the abstract UxrLaserPointerEventDataProvider decide with what the laser pointer can interact
+            _pointerEventDataProvider = GetComponent<UxrLaserPointerEventDataProvider>();
 
-            Debug.Assert( _pointerEventDataProvider != null, "No UxrInteractableEventDataProvider found. Please add one to this GameObject for the LaserPointer to work!",this);
+            Debug.Assert( _pointerEventDataProvider != null, "No UxrLaserPointerEventDataProvider found. Please add one to this GameObject so that the laser pointer can interact with objects (e.g. a UxrUILaserPointerEventDataProvider to interact with UI Elements)!", this);
 
             // Set up line renderer
 
@@ -438,7 +439,7 @@ namespace UltimateXR.UI
         private Renderer     _laserHitRenderer;
         private bool         _isAutoEnabled;
         private GameObject   _hitQuad;
-        private UxrInteractableEventDataProvider _pointerEventDataProvider;
+        private UxrLaserPointerEventDataProvider _pointerEventDataProvider;
 
         #endregion
     }
