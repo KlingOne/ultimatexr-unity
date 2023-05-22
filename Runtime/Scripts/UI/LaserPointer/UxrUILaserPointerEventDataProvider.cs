@@ -12,19 +12,16 @@ namespace UltimateXR.UI
     {
         private UxrLaserPointer pointer;
         private UxrLaserPointerEventData _data = new UxrLaserPointerEventData();
+        private UxrPointerEventData uiData = null;
+
         private void Start()
         {
             pointer = GetComponent<UxrLaserPointer>();
         }
 
-        public override UxrLaserPointerEventData GetData()
+        public override UxrLaserPointerEventData ProcessData()
         {
-            UxrPointerEventData uiData = null;
-
-            if (pointer != null )
-               uiData = UxrPointerInputModule.Instance != null ? UxrPointerInputModule.Instance.GetPointerEventData(pointer) : null;
-
-            if (uiData != null)
+            if (uiData != null && uiData.pointerCurrentRaycast.distance > 0)
             {
                 _data.HasData = uiData.HasData;
                 _data.Distance = uiData.pointerCurrentRaycast.distance;
@@ -39,6 +36,21 @@ namespace UltimateXR.UI
             }
 
             return _data;
+        }
+
+        public override float GetDistance()
+        {
+            _distance = -1f;
+
+            if (pointer != null)
+                uiData = UxrPointerInputModule.Instance != null ? UxrPointerInputModule.Instance.GetPointerEventData(pointer) : null;
+
+            if (uiData != null && uiData.IsInteractive && uiData.pointerCurrentRaycast.distance > 0)
+                _distance = uiData.pointerCurrentRaycast.distance;
+            else
+                uiData = null;
+
+            return _distance;
         }
     }
 }
