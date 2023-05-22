@@ -10,6 +10,8 @@ namespace UltimateXR.UI
     /// </summary>
     public abstract class UxrLaserPointerEventDataProvider : MonoBehaviour
     {
+        protected float _distance;
+
         public class UxrLaserPointerEventData
         {
             /// <summary>
@@ -28,6 +30,18 @@ namespace UltimateXR.UI
             public virtual bool HasData { get; set; }
         }
 
-        public abstract UxrLaserPointerEventData GetData();
+        /// <summary>
+        /// Gets called by the Laserpointer for the UxrLaserPointerEventDataProvider that is closest to avatar.
+        /// Implement this method to create and return a UxrLaserPointerEventData object
+        /// </summary>
+        /// <returns>UxrLaserPointerEventData data object</returns>
+        public abstract UxrLaserPointerEventData ProcessData();
+
+        /// <summary>
+        /// Gets the distance of the "hit" object
+        /// Implement a custom distance calucation (e.g. a raycast) for your object type here
+        /// </summary>
+        /// <returns>The distance to the hit object</returns>
+        public abstract float GetDistance();
     }
 }

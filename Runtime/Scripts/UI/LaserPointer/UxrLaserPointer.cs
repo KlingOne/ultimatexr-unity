@@ -3,6 +3,8 @@
 //   Copyright (c) VRMADA, All rights reserved.
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
+using System.Collections.Generic;
+using System.Linq;
 using UltimateXR.Avatar;
 using UltimateXR.Core;
 using UltimateXR.Core.Components.Composite;
@@ -247,7 +249,7 @@ namespace UltimateXR.UI
             get => _optionalEnableWhenLaserOn;
             set => _optionalEnableWhenLaserOn = value;
         }
-        
+
         #endregion
 
         #region Internal Types & Data
@@ -295,11 +297,7 @@ namespace UltimateXR.UI
                 UxrManager.LogMissingAvatarInHierarchyError(this);
             }
 
-            //Implementations of the abstract UxrLaserPointerEventDataProvider decide with what the laser pointer can interact
-            _pointerEventDataProvider = GetComponent<UxrLaserPointerEventDataProvider>();
-
-            Debug.Assert( _pointerEventDataProvider != null, "No UxrLaserPointerEventDataProvider found. Please add one to this GameObject so that the laser pointer can interact with objects (e.g. a UxrUILaserPointerEventDataProvider to interact with UI Elements)!", this);
-
+           
             // Set up line renderer
 
             _lineRenderer               = gameObject.AddComponent<LineRenderer>();
@@ -318,7 +316,11 @@ namespace UltimateXR.UI
             MeshFilter laserHitMeshFilter = _hitQuad.AddComponent<MeshFilter>();
             laserHitMeshFilter.sharedMesh = MeshExt.CreateQuad(1.0f);
 
-            _laserHitRenderer                   = _hitQuad.AddComponent<MeshRenderer>();
+            _availableLaserPointerEventDataProviders = GetComponents<UxrLaserPointerEventDataProvider>();
+
+            Debug.Assert(_availableLaserPointerEventDataProviders != null, "No UxrLaserPointerEventDataProvider found. Please add at least one to this GameObject so that the laser pointer can interact with objects (e.g. a UxrUILaserPointerEventDataProvider to interact with UI Elements)!", this);
+
+            _laserHitRenderer = _hitQuad.AddComponent<MeshRenderer>();
             _laserHitRenderer.receiveShadows    = false;
             _laserHitRenderer.shadowCastingMode = ShadowCastingMode.Off;
             _laserHitRenderer.sharedMaterial    = _rayHitMaterial;
@@ -336,7 +338,26 @@ namespace UltimateXR.UI
                 OptionalEnableWhenLaserOn.SetActive(IsLaserEnabled);
             }
 
-            var laserPointerEventData = _pointerEventDataProvider?.GetData();
+            var lowestDist = float.MaxValue;
+
+            //Sort the collected providers by their distance to the player. 
+            //The provider which is the closest one to the player, should be the active one.
+            //Simple loop with no Linq usage to prevent garbage
+            for (int i=0; i <_availableLaserPointerEventDataProviders.Length; i++)
+            {
+                if(_availableLaserPointerEventDataProviders[i].enabled)
+                {
+                    float distance = _availableLaserPointerEventDataProviders[i].GetDistance();
+
+                    if (distance > 0 &&  distance < lowestDist)
+                    {
+                        _closetsPointerEventDataProvider = _availableLaserPointerEventDataProviders[i];
+                        lowestDist = distance;
+                    }
+                }
+            }
+
+            var laserPointerEventData = _closetsPointerEventDataProvider?.ProcessData();
 
             if (_lineRenderer)
             {        
@@ -439,7 +460,8 @@ namespace UltimateXR.UI
         private Renderer     _laserHitRenderer;
         private bool         _isAutoEnabled;
         private GameObject   _hitQuad;
-        private UxrLaserPointerEventDataProvider _pointerEventDataProvider;
+        private UxrLaserPointerEventDataProvider[] _availableLaserPointerEventDataProviders;
+        private UxrLaserPointerEventDataProvider _closetsPointerEventDataProvider;
 
         #endregion
     }
