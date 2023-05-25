@@ -45,7 +45,7 @@ namespace UltimateXR.UI
             if (pointer != null)
                 uiData = UxrPointerInputModule.Instance != null ? UxrPointerInputModule.Instance.GetPointerEventData(pointer) : null;
 
-            if (uiData != null && uiData.IsInteractive && uiData.pointerCurrentRaycast.distance > 0)
+            if (uiData != null && !uiData.IsNonUI && uiData.pointerCurrentRaycast.distance > 0)
                 _distance = uiData.pointerCurrentRaycast.distance;
             else
                 uiData = null;
