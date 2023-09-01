@@ -380,6 +380,11 @@ namespace UltimateXR.UI
 
                 if (Avatar.CameraComponent && _hitQuad)
                 {
+                    //if _useControllerForward is set and a controller is active, we need to change the 
+                    //_hitQuad parent to the foward transform of the controller in order for the _hitQuad to be rendered at the correct location
+                    if(_hitQuad.transform.parent != LaserTransform)
+                        _hitQuad.transform.parent = LaserTransform;    
+
                     _hitQuad.SetActive(true);
                     _hitQuad.transform.localPosition = Vector3.forward * CurrentRayLength;
                     _hitQuad.transform.LookAt(Avatar.CameraPosition);
