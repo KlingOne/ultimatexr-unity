@@ -386,7 +386,7 @@ namespace UltimateXR.UI
                         _hitQuad.transform.parent = LaserTransform;    
 
                     _hitQuad.SetActive(true);
-                    _hitQuad.transform.localPosition = Vector3.forward * CurrentRayLength;
+                    _hitQuad.transform.position = LaserTransform.TransformPoint(Vector3.forward * CurrentRayLength);
                     _hitQuad.transform.LookAt(Avatar.CameraPosition);
 
                     Plane plane = new Plane(Avatar.CameraForward, Avatar.CameraPosition);
